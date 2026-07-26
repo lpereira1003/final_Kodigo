@@ -60,6 +60,8 @@ jobs:
           install -m 700 -d ~/.ssh
           if [ -n "$DEPLOY_SSH_KEY_B64" ]; then
             printf '%s' "$DEPLOY_SSH_KEY_B64" | base64 -d > ~/.ssh/mini_tienda_deploy_key
+          elif printf '%s' "$DEPLOY_SSH_KEY" | base64 -d > ~/.ssh/mini_tienda_deploy_key 2>/dev/null && grep -q "BEGIN .*PRIVATE KEY" ~/.ssh/mini_tienda_deploy_key; then
+            true
           else
             printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/mini_tienda_deploy_key
           fi
