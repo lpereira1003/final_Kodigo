@@ -45,21 +45,15 @@ jobs:
     steps:
       - name: Check deployment secrets
         env:
-          DO_HOST: ${{ secrets.DO_HOST }}
-          DO_USER: ${{ secrets.DO_USER }}
           DO_SSH_KEY: ${{ secrets.DO_SSH_KEY }}
-          APP_HEALTH_URL: ${{ secrets.APP_HEALTH_URL }}
         run: |
-          test -n "$DO_HOST" || (echo "Missing secret: DO_HOST" && exit 1)
-          test -n "$DO_USER" || (echo "Missing secret: DO_USER" && exit 1)
           test -n "$DO_SSH_KEY" || (echo "Missing secret: DO_SSH_KEY" && exit 1)
-          test -n "$APP_HEALTH_URL" || (echo "Missing secret: APP_HEALTH_URL" && exit 1)
 
       - name: Deploy over SSH
         uses: appleboy/ssh-action@v1.2.2
         with:
-          host: ${{ secrets.DO_HOST }}
-          username: ${{ secrets.DO_USER }}
+          host: 138.68.11.235
+          username: root
           key: ${{ secrets.DO_SSH_KEY }}
           script: |
             set -euo pipefail
@@ -72,7 +66,7 @@ jobs:
       - name: Verify production health
         run: |
           for attempt in {1..12}; do
-            if curl -fsS "${{ secrets.APP_HEALTH_URL }}"; then
+            if curl -fsS "http://138.68.11.235:3001/health"; then
               exit 0
             fi
             sleep 5
