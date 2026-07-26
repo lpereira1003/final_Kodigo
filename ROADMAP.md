@@ -82,7 +82,7 @@ Commits:
 
 ## Fase 4 - Dockerización
 
-Estado: Pendiente
+Estado: En progreso
 
 Tareas:
 
@@ -229,3 +229,4 @@ El proyecto se considerará completo cuando:
 | ---------- | --------------- | ---------------------------------------------------------- | ---------- | -------------------------------------------------------------------------------------- |
 | 2026-07-25 | Fase 1 y Fase 2 | Base de datos y backend completados y validados localmente | Completado | API REST funcional con productos, ventas, transacciones, Swagger y health check local. |
 | 2026-07-26 | Fase 3          | Control de versiones y publicación en GitHub              | Completado | .env ignorado, .env.example sin secretos, repo vinculado y commits descriptivos.       |
+| 2026-07-26 | Fase 4          | Preparación de Dockerfile, compose y variables de ejemplo | En progreso | Pendiente instalar Docker en el servidor y validar contenedor contra PostgreSQL.       |

@@ -55,6 +55,30 @@ Para produccion:
 npm start
 ```
 
+## Ejecucion con Docker
+
+Crear el archivo `.env` usando `.env.docker.example` como base y completar credenciales reales de PostgreSQL:
+
+```bash
+cp .env.docker.example .env
+docker compose up -d --build
+```
+
+El contenedor escucha internamente en `3000` y el `docker-compose.yml` publica la API en el puerto `3001` del servidor para evitar conflicto con otros servicios:
+
+```text
+http://localhost:3001/health
+http://localhost:3001/api-docs
+```
+
+Si PostgreSQL corre directamente en el servidor, usar:
+
+```env
+DB_HOST=host.docker.internal
+```
+
+El compose incluye `host.docker.internal:host-gateway` para permitir esa conexion desde Linux.
+
 ## Pruebas
 
 ```bash
