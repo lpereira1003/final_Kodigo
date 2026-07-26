@@ -90,6 +90,13 @@ Con el servidor activo:
 http://localhost:3000/api-docs
 ```
 
+Despliegue temporal en DigitalOcean:
+
+```text
+http://138.68.11.235:3001/health
+http://138.68.11.235:3001/api-docs/
+```
+
 ## Endpoints Principales
 
 Health:
