@@ -41,6 +41,7 @@ jobs:
     name: Deploy to DigitalOcean
     runs-on: ubuntu-latest
     needs: validate
+    environment: FINALKODIGO
 
     steps:
       - name: Check deployment secrets
