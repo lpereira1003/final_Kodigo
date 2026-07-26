@@ -73,6 +73,18 @@ http://localhost:3001/api-docs
 
 Para Docker, usar `DB_HOST=db` como se muestra en `.env.docker.example`.
 
+## CI/CD
+
+El repositorio incluye un workflow de GitHub Actions en `.github/workflows/deploy.yml`.
+
+El pipeline ejecuta pruebas, construye la imagen Docker, despliega en DigitalOcean por SSH y valida:
+
+```text
+http://138.68.11.235:3001/health
+```
+
+La configuracion de secretos requerida esta documentada en `docs/CI-CD.md`.
+
 ## Pruebas
 
 ```bash

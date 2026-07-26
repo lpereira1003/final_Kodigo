@@ -150,7 +150,7 @@ Tareas:
 
 ## Fase 8 - CI/CD
 
-Estado: Pendiente
+Estado: En progreso
 
 Tareas:
 
@@ -231,3 +231,4 @@ El proyecto se considerará completo cuando:
 | 2026-07-26 | Fase 3          | Control de versiones y publicación en GitHub              | Completado | .env ignorado, .env.example sin secretos, repo vinculado y commits descriptivos.       |
 | 2026-07-26 | Fase 4          | Preparación de Dockerfile, compose y variables de ejemplo | Completado  | API y PostgreSQL validados en contenedores Docker.                                     |
 | 2026-07-26 | Fase 5          | Despliegue inicial en DigitalOcean                        | En progreso | API pública en http://138.68.11.235:3001; pendiente dominio o reverse proxy.           |
+| 2026-07-26 | Fase 8          | Workflow CI/CD creado                                     | En progreso | Pendiente configurar secrets en GitHub y validar corrida exitosa del pipeline.         |
