@@ -9,6 +9,11 @@ import { ventasRouter } from './routes/ventas.routes.js';
 import { notFound } from './middlewares/notFound.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 
+/**
+ * Construye y configura la aplicacion Express con seguridad, rutas y errores.
+ *
+ * @returns {import('express').Express} Aplicacion Express lista para servir.
+ */
 export const createApp = () => {
   const app = express();
 

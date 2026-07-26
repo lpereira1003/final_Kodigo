@@ -1,5 +1,8 @@
 import { env } from '../config/env.js';
 
+/**
+ * Respuestas de error reutilizables para los endpoints documentados.
+ */
 const errorResponses = {
   400: { description: 'Datos inválidos', content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } } },
   404: { description: 'Recurso no encontrado', content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } } },
@@ -7,6 +10,9 @@ const errorResponses = {
   500: { description: 'Error inesperado', content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } } }
 };
 
+/**
+ * Especificacion OpenAPI 3.0 expuesta en Swagger UI.
+ */
 export const openApiSpec = {
   openapi: '3.0.3',
   info: {

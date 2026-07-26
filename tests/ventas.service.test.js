@@ -1,14 +1,23 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+/**
+ * Cliente PostgreSQL simulado para validar flujo transaccional.
+ */
 const client = {
   query: vi.fn(),
   release: vi.fn()
 };
 
+/**
+ * Mock de conexion para entregar siempre el cliente transaccional simulado.
+ */
 vi.mock('../src/config/db.js', () => ({
   getClient: vi.fn(async () => client)
 }));
 
+/**
+ * Mock del repositorio de ventas para probar reglas de negocio sin PostgreSQL.
+ */
 vi.mock('../src/repositories/ventas.repository.js', () => ({
   ventasRepository: {
     findAll: vi.fn(),
@@ -28,12 +37,21 @@ vi.mock('../src/repositories/ventas.repository.js', () => ({
 const { ventasRepository } = await import('../src/repositories/ventas.repository.js');
 const { ventasService } = await import('../src/services/ventas.service.js');
 
+/**
+ * Pruebas unitarias del servicio de ventas y sus transacciones.
+ */
 describe('ventasService', () => {
+  /**
+   * Limpia mocks y prepara respuestas base del cliente.
+   */
   beforeEach(() => {
     vi.clearAllMocks();
     client.query.mockResolvedValue({});
   });
 
+  /**
+   * Verifica calculo de importes usando precio_venta del repositorio.
+   */
   it('calcula subtotal y total con precio_venta de PostgreSQL', async () => {
     ventasRepository.lockProductosByIds.mockResolvedValue([
       { id: 1, codigo: 'MAR-001', precio_venta: 10.5, stock: 5, activo: true },
@@ -62,6 +80,9 @@ describe('ventasService', () => {
     expect(client.query).toHaveBeenCalledWith('COMMIT');
   });
 
+  /**
+   * Verifica que el servicio rechace ventas sin inventario suficiente.
+   */
   it('rechaza venta por stock insuficiente y ejecuta rollback', async () => {
     ventasRepository.lockProductosByIds.mockResolvedValue([
       { id: 1, codigo: 'MAR-001', precio_venta: 10, stock: 1, activo: true }
@@ -76,6 +97,9 @@ describe('ventasService', () => {
     expect(ventasRepository.createVenta).not.toHaveBeenCalled();
   });
 
+  /**
+   * Verifica que cualquier error intermedio active rollback.
+   */
   it('ejecuta rollback cuando falla una operación dentro de la transacción', async () => {
     ventasRepository.lockProductosByIds.mockResolvedValue([
       { id: 1, codigo: 'MAR-001', precio_venta: 10, stock: 5, activo: true }
@@ -89,6 +113,9 @@ describe('ventasService', () => {
     expect(client.release).toHaveBeenCalled();
   });
 
+  /**
+   * Verifica anulacion de venta y devolucion de stock.
+   */
   it('anula venta y devuelve stock', async () => {
     ventasRepository.lockVentaById.mockResolvedValue({
       id: 9,

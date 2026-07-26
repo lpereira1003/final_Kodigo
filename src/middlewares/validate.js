@@ -1,3 +1,9 @@
+/**
+ * Valida body, params y query con un schema Zod antes de llegar al controlador.
+ *
+ * @param {import('zod').ZodType} schema Schema de validacion.
+ * @returns {import('express').RequestHandler} Middleware de validacion.
+ */
 export const validate = (schema) => (req, res, next) => {
   const result = schema.safeParse({
     body: req.body,

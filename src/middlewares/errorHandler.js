@@ -1,6 +1,12 @@
 import { isProduction } from '../config/env.js';
 import { AppError } from '../utils/AppError.js';
 
+/**
+ * Traduce errores conocidos de PostgreSQL a errores operacionales de la API.
+ *
+ * @param {Error & { code?: string }} err Error original.
+ * @returns {AppError | null} Error de aplicacion equivalente.
+ */
 const mapPostgresError = (err) => {
   if (err?.code === '23505') {
     return new AppError('Conflicto de unicidad en la base de datos', 409);
@@ -13,6 +19,15 @@ const mapPostgresError = (err) => {
   return null;
 };
 
+/**
+ * Middleware centralizado de manejo de errores.
+ *
+ * @param {Error} err Error capturado.
+ * @param {import('express').Request} req Solicitud Express.
+ * @param {import('express').Response} res Respuesta Express.
+ * @param {import('express').NextFunction} next Siguiente middleware.
+ * @returns {void}
+ */
 export const errorHandler = (err, req, res, next) => {
   const mappedError = mapPostgresError(err);
   const error = mappedError || err;

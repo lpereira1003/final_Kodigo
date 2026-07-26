@@ -1,5 +1,11 @@
 import { query } from '../config/db.js';
 
+/**
+ * Normaliza tipos numericos devueltos por PostgreSQL para productos.
+ *
+ * @param {object} row Fila cruda de PostgreSQL.
+ * @returns {object} Producto serializable para la API.
+ */
 const mapProducto = (row) => ({
   ...row,
   precio_compra: Number(row.precio_compra),
@@ -7,7 +13,16 @@ const mapProducto = (row) => ({
   stock: Number(row.stock)
 });
 
+/**
+ * Repositorio SQL para la tabla productos.
+ */
 export const productosRepository = {
+  /**
+   * Busca productos con filtros opcionales y conteo total.
+   *
+   * @param {object} filters Filtros y paginacion.
+   * @returns {Promise<{items: object[], total: number}>} Productos y total.
+   */
   async findAll(filters) {
     const where = [];
     const params = [];
@@ -56,6 +71,12 @@ export const productosRepository = {
     };
   },
 
+  /**
+   * Busca un producto por identificador.
+   *
+   * @param {number} id Identificador del producto.
+   * @returns {Promise<object | null>} Producto encontrado o nulo.
+   */
   async findById(id) {
     const result = await query(
       `SELECT id, codigo, nombre, descripcion, precio_compra, precio_venta, stock, activo,
@@ -68,11 +89,23 @@ export const productosRepository = {
     return result.rows[0] ? mapProducto(result.rows[0]) : null;
   },
 
+  /**
+   * Busca un producto por codigo unico.
+   *
+   * @param {string} codigo Codigo del producto.
+   * @returns {Promise<object | null>} Registro minimo o nulo.
+   */
   async findByCodigo(codigo) {
     const result = await query('SELECT id FROM productos WHERE codigo = $1', [codigo]);
     return result.rows[0] || null;
   },
 
+  /**
+   * Inserta un producto en PostgreSQL.
+   *
+   * @param {object} data Datos del producto.
+   * @returns {Promise<object>} Producto creado.
+   */
   async create(data) {
     const result = await query(
       `INSERT INTO productos
@@ -94,6 +127,13 @@ export const productosRepository = {
     return mapProducto(result.rows[0]);
   },
 
+  /**
+   * Actualiza todos los campos editables de un producto.
+   *
+   * @param {number} id Identificador del producto.
+   * @param {object} data Datos completos del producto.
+   * @returns {Promise<object | null>} Producto actualizado o nulo.
+   */
   async update(id, data) {
     const result = await query(
       `UPDATE productos
@@ -123,6 +163,13 @@ export const productosRepository = {
     return result.rows[0] ? mapProducto(result.rows[0]) : null;
   },
 
+  /**
+   * Actualiza el estado logico de un producto.
+   *
+   * @param {number} id Identificador del producto.
+   * @param {boolean} activo Nuevo estado.
+   * @returns {Promise<object | null>} Producto actualizado o nulo.
+   */
   async updateEstado(id, activo) {
     const result = await query(
       `UPDATE productos

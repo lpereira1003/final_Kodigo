@@ -1,6 +1,13 @@
 import { env } from '../config/env.js';
 import { query } from '../config/db.js';
 
+/**
+ * Comprueba disponibilidad de la API y conectividad basica con PostgreSQL.
+ *
+ * @param {import('express').Request} req Solicitud Express.
+ * @param {import('express').Response} res Respuesta Express.
+ * @returns {Promise<import('express').Response>} Respuesta de estado del servicio.
+ */
 export const healthCheck = async (req, res) => {
   try {
     await query('SELECT 1');

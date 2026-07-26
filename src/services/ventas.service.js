@@ -2,11 +2,24 @@ import { getClient } from '../config/db.js';
 import { ventasRepository } from '../repositories/ventas.repository.js';
 import { AppError } from '../utils/AppError.js';
 
+/**
+ * Genera el numero publico de venta usando el id reservado en PostgreSQL.
+ *
+ * @param {number} id Identificador reservado desde la secuencia de ventas.
+ * @param {Date} [date=new Date()] Fecha usada para el prefijo anual.
+ * @returns {string} Numero de venta con formato VTA-YYYY-000001.
+ */
 const formatNumeroVenta = (id, date = new Date()) => {
   const year = date.getFullYear();
   return `VTA-${year}-${String(id).padStart(6, '0')}`;
 };
 
+/**
+ * Agrupa items repetidos para respetar la restriccion UNIQUE de detalle_ventas.
+ *
+ * @param {{producto_id: number, cantidad: number}[]} items Items solicitados.
+ * @returns {{producto_id: number, cantidad: number}[]} Items consolidados.
+ */
 const normalizeItems = (items) => {
   const grouped = new Map();
 
@@ -17,7 +30,16 @@ const normalizeItems = (items) => {
   return Array.from(grouped.entries()).map(([producto_id, cantidad]) => ({ producto_id, cantidad }));
 };
 
+/**
+ * Servicio de reglas de negocio para ventas y movimientos de inventario.
+ */
 export const ventasService = {
+  /**
+   * Lista ventas y calcula metadatos de paginacion.
+   *
+   * @param {object} filters Filtros y parametros de paginacion validados.
+   * @returns {Promise<{data: object[], meta: object}>} Ventas y metadatos.
+   */
   async list(filters) {
     const result = await ventasRepository.findAll(filters);
     return {
@@ -31,6 +53,12 @@ export const ventasService = {
     };
   },
 
+  /**
+   * Obtiene una venta con detalle o lanza error 404 si no existe.
+   *
+   * @param {number} id Identificador de la venta.
+   * @returns {Promise<object>} Venta con detalles.
+   */
   async getById(id) {
     const venta = await ventasRepository.findById(id);
     if (!venta) {
@@ -39,6 +67,12 @@ export const ventasService = {
     return venta;
   },
 
+  /**
+   * Registra una venta transaccional, calcula totales y descuenta stock.
+   *
+   * @param {{producto_id: number, cantidad: number}[]} items Productos vendidos.
+   * @returns {Promise<object>} Venta creada con detalle.
+   */
   async create(items) {
     if (!items?.length) {
       throw new AppError('La venta debe incluir al menos un producto', 400);
@@ -122,6 +156,12 @@ export const ventasService = {
     }
   },
 
+  /**
+   * Anula una venta transaccional y devuelve cantidades al inventario.
+   *
+   * @param {number} id Identificador de la venta.
+   * @returns {Promise<object>} Venta anulada con detalle historico.
+   */
   async anular(id) {
     const client = await getClient();
 

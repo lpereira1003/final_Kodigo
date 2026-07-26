@@ -2,13 +2,29 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+/**
+ * Convierte una variable de entorno a numero y aplica un valor por defecto.
+ *
+ * @param {string | undefined} value Valor recibido desde el entorno.
+ * @param {number} fallback Valor usado cuando la conversion falla.
+ * @returns {number} Numero validado.
+ */
 const toNumber = (value, fallback) => {
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : fallback;
 };
 
+/**
+ * Convierte una variable de entorno textual a booleano.
+ *
+ * @param {string | undefined} value Valor recibido desde el entorno.
+ * @returns {boolean} Verdadero solo cuando el valor es "true".
+ */
 const toBoolean = (value) => String(value).toLowerCase() === 'true';
 
+/**
+ * Configuracion centralizada de la API y de PostgreSQL.
+ */
 export const env = {
   nodeEnv: process.env.NODE_ENV || 'development',
   port: toNumber(process.env.PORT, 3000),
@@ -24,4 +40,7 @@ export const env = {
   }
 };
 
+/**
+ * Indica si la aplicacion se esta ejecutando en modo produccion.
+ */
 export const isProduction = env.nodeEnv === 'production';

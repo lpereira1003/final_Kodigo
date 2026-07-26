@@ -1,11 +1,23 @@
 import { query } from '../config/db.js';
 
+/**
+ * Normaliza tipos numericos devueltos por PostgreSQL para ventas.
+ *
+ * @param {object} row Fila cruda de PostgreSQL.
+ * @returns {object} Venta serializable para la API.
+ */
 const mapVenta = (row) => ({
   ...row,
   subtotal: Number(row.subtotal),
   total: Number(row.total)
 });
 
+/**
+ * Normaliza tipos numericos devueltos por PostgreSQL para detalles de venta.
+ *
+ * @param {object} row Fila cruda de PostgreSQL.
+ * @returns {object} Detalle de venta serializable para la API.
+ */
 const mapDetalle = (row) => ({
   ...row,
   cantidad: Number(row.cantidad),
@@ -13,6 +25,13 @@ const mapDetalle = (row) => ({
   subtotal: Number(row.subtotal)
 });
 
+/**
+ * Combina encabezado y detalle en una venta completa.
+ *
+ * @param {object[]} ventaRows Filas de encabezado.
+ * @param {object[]} detalleRows Filas de detalle.
+ * @returns {object | null} Venta con detalles o nulo.
+ */
 const mapVentaWithDetalles = (ventaRows, detalleRows) => {
   if (!ventaRows[0]) {
     return null;
@@ -24,7 +43,16 @@ const mapVentaWithDetalles = (ventaRows, detalleRows) => {
   };
 };
 
+/**
+ * Repositorio SQL para ventas y detalle_ventas.
+ */
 export const ventasRepository = {
+  /**
+   * Busca ventas con filtros opcionales y conteo total.
+   *
+   * @param {object} filters Filtros y paginacion.
+   * @returns {Promise<{items: object[], total: number}>} Ventas y total.
+   */
   async findAll(filters) {
     const params = [];
     const where = [];
@@ -56,6 +84,13 @@ export const ventasRepository = {
     };
   },
 
+  /**
+   * Busca una venta con sus detalles.
+   *
+   * @param {number} id Identificador de la venta.
+   * @param {{query: Function}} [db] Pool o cliente PostgreSQL.
+   * @returns {Promise<object | null>} Venta con detalles o nulo.
+   */
   async findById(id, db = { query }) {
     const ventaResult = await db.query(
       `SELECT id, numero_venta, fecha_venta, subtotal, total, estado
@@ -77,11 +112,24 @@ export const ventasRepository = {
     return mapVentaWithDetalles(ventaResult.rows, detalleResult.rows);
   },
 
+  /**
+   * Reserva el siguiente id de la secuencia de ventas.
+   *
+   * @param {import('pg').PoolClient} client Cliente transaccional.
+   * @returns {Promise<number>} Id reservado.
+   */
   async getNextVentaId(client) {
     const result = await client.query("SELECT nextval(pg_get_serial_sequence('ventas', 'id'))::bigint AS id");
     return Number(result.rows[0].id);
   },
 
+  /**
+   * Bloquea productos involucrados en una venta para validar stock.
+   *
+   * @param {number[]} productIds Identificadores de productos.
+   * @param {import('pg').PoolClient} client Cliente transaccional.
+   * @returns {Promise<object[]>} Productos bloqueados.
+   */
   async lockProductosByIds(productIds, client) {
     const result = await client.query(
       `SELECT id, codigo, nombre, precio_venta, stock, activo
@@ -98,6 +146,13 @@ export const ventasRepository = {
     }));
   },
 
+  /**
+   * Inserta el encabezado de una venta.
+   *
+   * @param {object} data Datos calculados de la venta.
+   * @param {import('pg').PoolClient} client Cliente transaccional.
+   * @returns {Promise<object>} Venta creada.
+   */
   async createVenta(data, client) {
     const result = await client.query(
       `INSERT INTO ventas (id, numero_venta, fecha_venta, subtotal, total, estado)
@@ -109,6 +164,13 @@ export const ventasRepository = {
     return mapVenta(result.rows[0]);
   },
 
+  /**
+   * Inserta un detalle de venta.
+   *
+   * @param {object} data Datos calculados del detalle.
+   * @param {import('pg').PoolClient} client Cliente transaccional.
+   * @returns {Promise<object>} Detalle creado.
+   */
   async createDetalle(data, client) {
     const result = await client.query(
       `INSERT INTO detalle_ventas (venta_id, producto_id, cantidad, precio_unitario, subtotal)
@@ -120,6 +182,14 @@ export const ventasRepository = {
     return mapDetalle(result.rows[0]);
   },
 
+  /**
+   * Descuenta unidades del inventario de un producto.
+   *
+   * @param {number} productoId Identificador del producto.
+   * @param {number} cantidad Cantidad a descontar.
+   * @param {import('pg').PoolClient} client Cliente transaccional.
+   * @returns {Promise<void>}
+   */
   async descontarStock(productoId, cantidad, client) {
     await client.query(
       `UPDATE productos
@@ -130,6 +200,14 @@ export const ventasRepository = {
     );
   },
 
+  /**
+   * Devuelve unidades al inventario de un producto.
+   *
+   * @param {number} productoId Identificador del producto.
+   * @param {number} cantidad Cantidad a devolver.
+   * @param {import('pg').PoolClient} client Cliente transaccional.
+   * @returns {Promise<void>}
+   */
   async devolverStock(productoId, cantidad, client) {
     await client.query(
       `UPDATE productos
@@ -140,6 +218,13 @@ export const ventasRepository = {
     );
   },
 
+  /**
+   * Bloquea una venta para procesar su anulacion de forma segura.
+   *
+   * @param {number} id Identificador de la venta.
+   * @param {import('pg').PoolClient} client Cliente transaccional.
+   * @returns {Promise<object | null>} Venta bloqueada o nulo.
+   */
   async lockVentaById(id, client) {
     const result = await client.query(
       `SELECT id, numero_venta, fecha_venta, subtotal, total, estado
@@ -152,6 +237,13 @@ export const ventasRepository = {
     return result.rows[0] ? mapVenta(result.rows[0]) : null;
   },
 
+  /**
+   * Obtiene los detalles historicos de una venta.
+   *
+   * @param {number} ventaId Identificador de la venta.
+   * @param {import('pg').PoolClient} client Cliente transaccional.
+   * @returns {Promise<object[]>} Detalles de la venta.
+   */
   async findDetallesByVentaId(ventaId, client) {
     const result = await client.query(
       `SELECT id, venta_id, producto_id, cantidad, precio_unitario, subtotal
@@ -164,6 +256,14 @@ export const ventasRepository = {
     return result.rows.map(mapDetalle);
   },
 
+  /**
+   * Actualiza el estado de una venta.
+   *
+   * @param {number} id Identificador de la venta.
+   * @param {'COMPLETADA' | 'ANULADA'} estado Nuevo estado.
+   * @param {import('pg').PoolClient} client Cliente transaccional.
+   * @returns {Promise<object | null>} Venta actualizada o nulo.
+   */
   async updateEstadoVenta(id, estado, client) {
     const result = await client.query(
       `UPDATE ventas

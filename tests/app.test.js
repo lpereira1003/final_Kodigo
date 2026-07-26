@@ -1,6 +1,9 @@
 import request from 'supertest';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+/**
+ * Mock de la capa PostgreSQL para probar endpoints sin base de datos real.
+ */
 vi.mock('../src/config/db.js', () => ({
   query: vi.fn(),
   getClient: vi.fn(),
@@ -10,13 +13,22 @@ vi.mock('../src/config/db.js', () => ({
 const { query } = await import('../src/config/db.js');
 const { createApp } = await import('../src/app.js');
 
+/**
+ * Pruebas HTTP basicas de health check y validaciones de entrada.
+ */
 describe('API base', () => {
   const app = createApp();
 
+  /**
+   * Limpia los mocks antes de cada caso para aislar resultados.
+   */
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
+  /**
+   * Valida que el health check responda correctamente con PostgreSQL disponible.
+   */
   it('GET /health responde 200 cuando PostgreSQL responde', async () => {
     query.mockResolvedValueOnce({ rows: [{ '?column?': 1 }] });
 
@@ -27,6 +39,9 @@ describe('API base', () => {
     expect(response.body.data.database).toBe('ok');
   });
 
+  /**
+   * Valida que Zod rechace productos con datos fuera de contrato.
+   */
   it('rechaza creación de producto con datos inválidos', async () => {
     const response = await request(app).post('/api/productos').send({
       codigo: '',
@@ -41,6 +56,9 @@ describe('API base', () => {
     expect(response.body.errors.length).toBeGreaterThan(0);
   });
 
+  /**
+   * Valida que una venta sin items no llegue a la capa de negocio.
+   */
   it('rechaza venta sin items', async () => {
     const response = await request(app).post('/api/ventas').send({ items: [] });
 
