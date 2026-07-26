@@ -46,17 +46,23 @@ jobs:
     steps:
       - name: Check deployment secrets
         env:
+          DEPLOY_SSH_KEY_B64: ${{ secrets.DO_SSH_KEY_B64 }}
           DEPLOY_SSH_KEY: ${{ secrets.DO_SSH_KEY || secrets.FINALKODIGO }}
         run: |
-          test -n "$DEPLOY_SSH_KEY" || (echo "Missing secret: DO_SSH_KEY or FINALKODIGO" && exit 1)
+          test -n "$DEPLOY_SSH_KEY_B64$DEPLOY_SSH_KEY" || (echo "Missing secret: DO_SSH_KEY_B64, DO_SSH_KEY or FINALKODIGO" && exit 1)
 
       - name: Deploy over SSH
         env:
+          DEPLOY_SSH_KEY_B64: ${{ secrets.DO_SSH_KEY_B64 }}
           DEPLOY_SSH_KEY: ${{ secrets.DO_SSH_KEY || secrets.FINALKODIGO }}
         run: |
           set -euo pipefail
           install -m 700 -d ~/.ssh
-          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/mini_tienda_deploy_key
+          if [ -n "$DEPLOY_SSH_KEY_B64" ]; then
+            printf '%s' "$DEPLOY_SSH_KEY_B64" | base64 -d > ~/.ssh/mini_tienda_deploy_key
+          else
+            printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/mini_tienda_deploy_key
+          fi
           chmod 600 ~/.ssh/mini_tienda_deploy_key
           ssh-keyscan -H 138.68.11.235 >> ~/.ssh/known_hosts
           ssh -i ~/.ssh/mini_tienda_deploy_key root@138.68.11.235 <<'DEPLOY'
