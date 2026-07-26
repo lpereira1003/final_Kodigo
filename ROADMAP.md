@@ -164,6 +164,20 @@ Tareas:
 - Detener el pipeline si el health check falla.
 - Documentar evidencia del pipeline exitoso.
 
+Evidencia:
+
+- Workflow: `.github/workflows/deploy.yml`.
+- Rama de despliegue: `main`.
+- Servidor destino: DigitalOcean `138.68.11.235`.
+- Contenedores actualizados con `docker compose up -d --build`.
+- Secret configurado en GitHub Actions: `DO_SSH_KEY_B64`.
+- Run exitoso: `30225514290`.
+- Commit validado: `6cf7f71`.
+- Jobs exitosos: `Validate` y `Deploy to DigitalOcean`.
+- Validaciones ejecutadas: `npm ci`, `npm test`, `docker compose build`, despliegue por SSH y verificacion de `/health`.
+- URL verificada: `http://138.68.11.235:3001/health`.
+- Resultado de produccion: API activa, base de datos `ok`, entorno `production`.
+
 ## Fase 9 - Documentación final
 
 Estado: Pendiente
