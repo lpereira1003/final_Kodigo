@@ -46,16 +46,16 @@ jobs:
     steps:
       - name: Check deployment secrets
         env:
-          DO_SSH_KEY: ${{ secrets.DO_SSH_KEY }}
+          DEPLOY_SSH_KEY: ${{ secrets.DO_SSH_KEY || secrets.FINALKODIGO }}
         run: |
-          test -n "$DO_SSH_KEY" || (echo "Missing secret: DO_SSH_KEY" && exit 1)
+          test -n "$DEPLOY_SSH_KEY" || (echo "Missing secret: DO_SSH_KEY or FINALKODIGO" && exit 1)
 
       - name: Deploy over SSH
         uses: appleboy/ssh-action@v1.2.2
         with:
           host: 138.68.11.235
           username: root
-          key: ${{ secrets.DO_SSH_KEY }}
+          key: ${{ secrets.DO_SSH_KEY || secrets.FINALKODIGO }}
           script: |
             set -euo pipefail
             cd /opt/mini-tienda-api

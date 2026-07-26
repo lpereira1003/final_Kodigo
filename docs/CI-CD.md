@@ -39,7 +39,7 @@ Secret requerido en el environment `FINALKODIGO`:
 | ------ | ----- |
 | `DO_SSH_KEY` | Llave privada SSH autorizada en el servidor para despliegue |
 
-El job de despliegue declara `environment: FINALKODIGO`, por lo que `DO_SSH_KEY` puede estar configurado como environment secret. El host `138.68.11.235`, el usuario `root` y la URL `http://138.68.11.235:3001/health` no son secretos y estan definidos directamente en el workflow.
+El workflow tambien acepta un secret llamado `FINALKODIGO` como respaldo, por si la llave fue guardada con el nombre del environment. El host `138.68.11.235`, el usuario `root` y la URL `http://138.68.11.235:3001/health` no son secretos y estan definidos directamente en el workflow.
 
 ## Servidor
 
