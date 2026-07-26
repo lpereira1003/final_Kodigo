@@ -99,7 +99,7 @@ Tareas:
 
 ## Fase 5 - Despliegue en la nube
 
-Estado: En progreso
+Estado: Completada
 
 Tareas:
 
@@ -150,7 +150,7 @@ Tareas:
 
 ## Fase 8 - CI/CD
 
-Estado: En progreso
+Estado: Completada
 
 Tareas:
 
@@ -230,5 +230,5 @@ El proyecto se considerará completo cuando:
 | 2026-07-25 | Fase 1 y Fase 2 | Base de datos y backend completados y validados localmente | Completado | API REST funcional con productos, ventas, transacciones, Swagger y health check local. |
 | 2026-07-26 | Fase 3          | Control de versiones y publicación en GitHub              | Completado | .env ignorado, .env.example sin secretos, repo vinculado y commits descriptivos.       |
 | 2026-07-26 | Fase 4          | Preparación de Dockerfile, compose y variables de ejemplo | Completado  | API y PostgreSQL validados en contenedores Docker.                                     |
-| 2026-07-26 | Fase 5          | Despliegue inicial en DigitalOcean                        | En progreso | API pública en http://138.68.11.235:3001; pendiente dominio o reverse proxy.           |
-| 2026-07-26 | Fase 8          | Workflow CI/CD creado                                     | En progreso | Pendiente configurar secrets en GitHub y validar corrida exitosa del pipeline.         |
+| 2026-07-26 | Fase 5          | Despliegue inicial en DigitalOcean                        | Completado  | API publica en http://138.68.11.235:3001 con contenedores Docker.                      |
+| 2026-07-26 | Fase 8          | Workflow CI/CD creado y validado                          | Completado  | Pipeline exitoso: pruebas, build Docker, despliegue SSH y verificacion de /health.    |
