@@ -23,6 +23,7 @@ Flujo:
 - Limpia imágenes Docker sin uso.
 - Verifica `GET /health` público.
 - Falla el pipeline si las pruebas, el build, el despliegue o el health check fallan.
+- Falla con un mensaje explicito si falta alguno de los secrets requeridos.
 
 ## Secrets requeridos
 
