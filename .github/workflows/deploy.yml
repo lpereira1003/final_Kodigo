@@ -51,18 +51,22 @@ jobs:
           test -n "$DEPLOY_SSH_KEY" || (echo "Missing secret: DO_SSH_KEY or FINALKODIGO" && exit 1)
 
       - name: Deploy over SSH
-        uses: appleboy/ssh-action@v1.2.2
-        with:
-          host: 138.68.11.235
-          username: root
-          key: ${{ secrets.DO_SSH_KEY || secrets.FINALKODIGO }}
-          script: |
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DO_SSH_KEY || secrets.FINALKODIGO }}
+        run: |
+          set -euo pipefail
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/mini_tienda_deploy_key
+          chmod 600 ~/.ssh/mini_tienda_deploy_key
+          ssh-keyscan -H 138.68.11.235 >> ~/.ssh/known_hosts
+          ssh -i ~/.ssh/mini_tienda_deploy_key root@138.68.11.235 <<'DEPLOY'
             set -euo pipefail
             cd /opt/mini-tienda-api
             git fetch origin main
             git reset --hard origin/main
             docker compose up -d --build
             docker image prune -f
+          DEPLOY
 
       - name: Verify production health
         run: |

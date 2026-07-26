@@ -17,7 +17,7 @@ Flujo:
 - Ejecuta `npm ci`.
 - Ejecuta `npm test`.
 - Construye la imagen con `docker compose build`.
-- Se conecta por SSH al servidor.
+- Se conecta por SSH al servidor usando OpenSSH.
 - Actualiza `/opt/mini-tienda-api` con `origin/main`.
 - Ejecuta `docker compose up -d --build`.
 - Limpia imágenes Docker sin uso.
