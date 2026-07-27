@@ -55,6 +55,13 @@ Para produccion:
 npm start
 ```
 
+## Puertos
+
+| Entorno | URL base | Motivo |
+| ------- | -------- | ------ |
+| Local | `http://localhost:3000` | La API Express escucha directamente en el puerto definido por `PORT=3000`. |
+| Docker/DigitalOcean | `http://138.68.11.235:3001` | El contenedor escucha internamente en `3000`, pero Docker publica `3001:3000` para evitar conflicto con otro servicio del servidor. |
+
 ## Ejecucion con Docker
 
 Crear el archivo `.env` usando `.env.docker.example` como base y completar credenciales reales de PostgreSQL:

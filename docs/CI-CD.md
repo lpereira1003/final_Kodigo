@@ -55,6 +55,16 @@ Servicios Docker:
 docker compose ps
 ```
 
+Puertos:
+
+| Entorno | Puerto |
+| ------- | ------ |
+| API local | `3000` |
+| API dentro del contenedor | `3000` |
+| API publicada en DigitalOcean | `3001` |
+
+El mapeo definido en `docker-compose.yml` es `3001:3000`: el servidor recibe trafico en `3001` y lo redirige al puerto `3000` interno del contenedor.
+
 URL pública:
 
 ```text

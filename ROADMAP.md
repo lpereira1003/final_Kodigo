@@ -170,6 +170,7 @@ Evidencia:
 - Rama de despliegue: `main`.
 - Servidor destino: DigitalOcean `138.68.11.235`.
 - Contenedores actualizados con `docker compose up -d --build`.
+- Mapeo de puertos en Docker/DigitalOcean: `3001:3000` (`3001` publico hacia `3000` interno del contenedor).
 - Secret configurado en GitHub Actions: `DO_SSH_KEY_B64`.
 - Run exitoso: `30225514290`.
 - Commit validado: `6cf7f71`.
