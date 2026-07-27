@@ -10,6 +10,10 @@ const errorResponses = {
   500: { description: 'Error inesperado', content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } } }
 };
 
+const servers = env.nodeEnv === 'production'
+  ? [{ url: 'http://138.68.11.235:3001', description: 'Servidor DigitalOcean' }]
+  : [{ url: `http://localhost:${env.port}`, description: 'Servidor local' }];
+
 /**
  * Especificacion OpenAPI 3.0 expuesta en Swagger UI.
  */
@@ -20,7 +24,7 @@ export const openApiSpec = {
     version: env.apiVersion,
     description: 'API REST para productos y ventas de una mini tienda de hardware.'
   },
-  servers: [{ url: `http://localhost:${env.port}`, description: 'Servidor local' }],
+  servers,
   tags: [{ name: 'Health' }, { name: 'Productos' }, { name: 'Ventas' }],
   paths: {
     '/health': {
