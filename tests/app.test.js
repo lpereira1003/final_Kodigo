@@ -40,6 +40,17 @@ describe('API base', () => {
   });
 
   /**
+   * Valida que la especificacion OpenAPI este disponible para Swagger UI.
+   */
+  it('GET /api-docs.json expone la especificacion OpenAPI', async () => {
+    const response = await request(app).get('/api-docs.json');
+
+    expect(response.status).toBe(200);
+    expect(response.body.openapi).toBe('3.0.3');
+    expect(response.body.info.title).toBe('Mini Tienda Hardware API');
+  });
+
+  /**
    * Valida que Zod rechace productos con datos fuera de contrato.
    */
   it('rechaza creación de producto con datos inválidos', async () => {
