@@ -12,6 +12,7 @@ vi.mock('../src/config/db.js', () => ({
 
 const { query } = await import('../src/config/db.js');
 const { createApp } = await import('../src/app.js');
+const { env } = await import('../src/config/env.js');
 
 /**
  * Pruebas HTTP basicas de health check y validaciones de entrada.
@@ -24,6 +25,31 @@ describe('API base', () => {
    */
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  /**
+   * Valida que la ruta raiz entregue informacion publica de entrada a la API.
+   */
+  it('GET / responde informacion operativa de la API', async () => {
+    const response = await request(app).get('/');
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({
+      success: true,
+      message: 'Mini Tienda Hardware API REST operativa',
+      data: {
+        project: 'Mini Tienda Hardware API REST',
+        description: 'API REST para la gestión de productos, ventas y detalle de ventas.',
+        version: env.apiVersion,
+        environment: env.nodeEnv,
+        documentation: '/api-docs/',
+        health: '/health',
+        resources: {
+          productos: '/api/productos',
+          ventas: '/api/ventas'
+        }
+      }
+    });
   });
 
   /**

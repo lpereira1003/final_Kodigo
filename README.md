@@ -101,6 +101,41 @@ npm run test:coverage
 
 Las pruebas actuales mockean la capa de base de datos y no dependen de la base productiva.
 
+## Ruta raíz
+
+La ruta base de la API responde con información pública de entrada para evaluadores y consumidores del servicio:
+
+```text
+GET /
+```
+
+URL de producción:
+
+```text
+http://138.68.11.235:3001
+```
+
+Respuesta representativa:
+
+```json
+{
+  "success": true,
+  "message": "Mini Tienda Hardware API REST operativa",
+  "data": {
+    "project": "Mini Tienda Hardware API REST",
+    "description": "API REST para la gestión de productos, ventas y detalle de ventas.",
+    "version": "1.0.0",
+    "environment": "production",
+    "documentation": "/api-docs/",
+    "health": "/health",
+    "resources": {
+      "productos": "/api/productos",
+      "ventas": "/api/ventas"
+    }
+  }
+}
+```
+
 ## Documentacion Swagger
 
 Con el servidor activo:
