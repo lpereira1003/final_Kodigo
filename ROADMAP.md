@@ -10,7 +10,7 @@ Desarrollar y desplegar una API REST para una mini tienda de hardware utilizando
 - Base de datos: PostgreSQL
 - Backend: Node.js + Express
 - Documentación: Swagger/OpenAPI
-- Estado actual: Backend funcional, publicado en GitHub y desplegado en DigitalOcean con Docker
+- Estado actual: Proyecto backend finalizado, publicado en GitHub y desplegado en DigitalOcean con Docker y CI/CD
 
 ## Fase 1 - Diseño e implementación de la base de datos
 
@@ -117,7 +117,7 @@ Tareas:
 
 ## Fase 6 - Monitoreo
 
-Estado: Pendiente
+Estado: Completada
 
 Tareas:
 
@@ -132,21 +132,47 @@ Tareas:
 - Definir estrategia de logs.
 - Documentar evidencias de monitoreo.
 
+Evidencia:
+
+- Endpoint implementado: `GET /health`.
+- URL local documentada: `http://localhost:3000/health`.
+- URL de produccion documentada: `http://138.68.11.235:3001/health`.
+- Validacion de API operativa mediante respuesta HTTP `200`.
+- Validacion de conectividad con PostgreSQL mediante consulta interna `SELECT 1`.
+- Respuesta de monitoreo con estado de base de datos, uptime, timestamp, entorno y version de la API.
+- Respuesta HTTP `503` cuando PostgreSQL no se encuentra disponible.
+- Endpoint documentado en Swagger/OpenAPI.
+- Evidencia principal agregada en `README.md`, seccion `Monitoreo de la API`.
+- Validacion automatica mediante GitHub Actions al finalizar el despliegue en DigitalOcean.
+
 ## Fase 7 - Plan de backups
 
-Estado: Pendiente
+Estado: Completada
 
 Tareas:
 
-- Definir qué información será respaldada.
-- Respaldar la base de datos PostgreSQL.
-- Definir frecuencia de respaldos.
-- Definir ubicación de almacenamiento.
-- Crear procedimiento con pg_dump.
-- Crear procedimiento de restauración.
-- Definir política de retención.
-- Documentar pruebas de restauración.
-- Crear el documento del plan de backups.
+- [x] Definir qué información será respaldada.
+- [x] Documentar respaldo de la base de datos PostgreSQL.
+- [x] Definir frecuencia de respaldos.
+- [x] Definir ubicación de almacenamiento.
+- [x] Crear procedimiento con `pg_dump`.
+- [x] Crear procedimiento de restauración con `pg_restore`.
+- [x] Definir política de retención.
+- [ ] Documentar pruebas de restauración ejecutadas. Pendiente: no se han realizado pruebas reales de restauración.
+- [x] Crear el documento del plan de backups.
+
+Evidencia:
+
+- Documento creado: `docs/BACKUP_PLAN.md`.
+- Elemento crítico identificado: base de datos PostgreSQL `mini_tienda_db`.
+- Tablas cubiertas: `productos`, `ventas` y `detalle_ventas`.
+- Código fuente respaldado mediante GitHub.
+- Variables de entorno excluidas del repositorio y tratadas como información sensible.
+- Frecuencia recomendada definida para base de datos, código, variables, documentación y despliegues importantes.
+- Lugar de almacenamiento recomendado fuera del contenedor y fuera del repositorio.
+- Procedimiento de respaldo documentado con `pg_dump -Fc`.
+- Procedimiento de recuperación documentado con `pg_restore`.
+- Nota explícita: no se ejecutaron respaldos reales ni pruebas reales de restauración en esta fase documental.
 
 ## Fase 8 - CI/CD
 
@@ -181,26 +207,37 @@ Evidencia:
 
 ## Fase 9 - Documentación final
 
-Estado: Pendiente
+Estado: Completada
 
 Tareas:
 
-- Completar README.md.
-- Documentar objetivo del proyecto.
-- Documentar tecnologías utilizadas.
-- Documentar arquitectura.
-- Documentar instalación local.
-- Documentar variables de entorno.
-- Documentar endpoints.
-- Documentar Swagger.
-- Documentar Docker.
-- Documentar despliegue.
-- Documentar monitoreo.
-- Documentar backups.
-- Documentar CI/CD.
-- Incluir URL pública de la API.
-- Incluir enlace al repositorio.
-- Incluir evidencias requeridas por la actividad.
+- [x] Completar README.md.
+- [x] Documentar objetivo del proyecto.
+- [x] Documentar tecnologías utilizadas.
+- [x] Documentar arquitectura.
+- [x] Documentar instalación local.
+- [x] Documentar variables de entorno.
+- [x] Documentar endpoints.
+- [x] Documentar Swagger.
+- [x] Documentar Docker.
+- [x] Documentar despliegue.
+- [x] Documentar monitoreo.
+- [x] Documentar backups.
+- [x] Documentar CI/CD.
+- [x] Incluir URL pública de la API.
+- [x] Incluir evidencia de ruta raiz `GET /`.
+- [x] Incluir evidencias requeridas por la actividad.
+
+Evidencia:
+
+- README actualizado con estado del proyecto, URLs de produccion y endpoints principales.
+- Ruta raiz `GET /` documentada y validada en produccion.
+- URL publica principal documentada: `http://138.68.11.235:3001`.
+- Swagger documentado: `http://138.68.11.235:3001/api-docs/`.
+- Health check documentado: `http://138.68.11.235:3001/health`.
+- Monitoreo documentado en README.
+- Plan de backups documentado en `docs/BACKUP_PLAN.md`.
+- CI/CD documentado en README y `docs/CI-CD.md`.
 
 ## Fase 10 - Integración Full Stack adicional
 
@@ -232,11 +269,17 @@ El proyecto se considerará completo cuando:
 - PostgreSQL esté integrado.
 - Las variables de entorno estén configuradas.
 - GET /health responda correctamente.
+- GET / responda con informacion de entrada de la API.
 - El plan de backups esté documentado.
 - El pipeline CI/CD funcione.
 - El repositorio esté publicado.
 - El README contenga toda la evidencia solicitada.
 - La URL pública pueda ser probada por el coach.
+
+Estado final:
+
+- Criterios de finalizacion cumplidos para el alcance backend y DevOps del proyecto.
+- La integracion Full Stack queda documentada como fase opcional fuera de la rubrica.
 
 ## Registro de avances
 
@@ -247,3 +290,7 @@ El proyecto se considerará completo cuando:
 | 2026-07-26 | Fase 4          | Preparación de Dockerfile, compose y variables de ejemplo | Completado  | API y PostgreSQL validados en contenedores Docker.                                     |
 | 2026-07-26 | Fase 5          | Despliegue inicial en DigitalOcean                        | Completado  | API publica en http://138.68.11.235:3001 con contenedores Docker.                      |
 | 2026-07-26 | Fase 8          | Workflow CI/CD creado y validado                          | Completado  | Pipeline exitoso: pruebas, build Docker, despliegue SSH y verificacion de /health.    |
+| 2026-07-27 | Fase 6          | Monitoreo documentado y validado                          | Completado  | Endpoint GET /health documentado con validacion manual, Swagger y CI/CD.              |
+| 2026-07-27 | Fase 7          | Plan de backups documentado                               | Completado  | Plan creado en docs/BACKUP_PLAN.md; no se ejecutaron respaldos ni restauraciones reales. |
+| 2026-07-30 | Ruta raiz       | Respuesta informativa para GET / desplegada               | Completado  | Produccion responde HTTP 200 en http://138.68.11.235:3001 con metadata publica de la API. |
+| 2026-07-30 | Fase 9          | Documentacion final actualizada                           | Completado  | README y roadmap actualizados acorde al estado final del backend y DevOps.             |

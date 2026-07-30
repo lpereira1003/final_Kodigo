@@ -2,6 +2,26 @@
 
 API REST para una mini tienda de hardware, enfocada en productos, ventas y detalle de ventas.
 
+## Estado del proyecto
+
+Proyecto backend finalizado y desplegado en DigitalOcean con Docker y CI/CD mediante GitHub Actions.
+
+URLs principales de producción:
+
+```text
+http://138.68.11.235:3001
+http://138.68.11.235:3001/health
+http://138.68.11.235:3001/api-docs/
+```
+
+Estado funcional validado:
+
+- Ruta raíz `GET /` operativa con respuesta JSON informativa.
+- Health check `GET /health` operativo y conectado a PostgreSQL.
+- Swagger disponible en producción.
+- Pipeline CI/CD configurado para desplegar cada `push` a `main`.
+- Plan de backups documentado en `docs/BACKUP_PLAN.md`.
+
 ## Tecnologias
 
 - Node.js
@@ -136,6 +156,82 @@ Respuesta representativa:
 }
 ```
 
+## Monitoreo de la API
+
+La API implementa un endpoint de monitoreo para verificar el estado operativo del servicio:
+
+```text
+GET /health
+```
+
+Este endpoint forma parte de las buenas prácticas DevOps del proyecto, ya que permite comprobar rápidamente si la API se encuentra disponible. También es utilizado de forma manual durante las validaciones y de forma automática por el pipeline de despliegue.
+
+URLs de monitoreo:
+
+| Entorno | URL |
+| ------- | --- |
+| Local | `http://localhost:3000/health` |
+| Producción | `http://138.68.11.235:3001/health` |
+
+El endpoint verifica la siguiente información:
+
+- Estado de la API.
+- Conectividad con PostgreSQL.
+- Tiempo de actividad (`uptime`).
+- Fecha y hora de la consulta.
+- Entorno de ejecución.
+- Versión de la API.
+
+Respuesta exitosa representativa:
+
+```json
+{
+  "success": true,
+  "message": "API activa",
+  "data": {
+    "database": "ok",
+    "uptime": 120.45,
+    "timestamp": "2026-07-27T20:18:58.000Z",
+    "environment": "production",
+    "apiVersion": "1.0.0"
+  }
+}
+```
+
+Una respuesta HTTP `200` indica que la API y PostgreSQL se encuentran operativos.
+
+Si PostgreSQL no está disponible, el endpoint devuelve HTTP `503`. Esta validación permite detectar cuando la API responde, pero no puede conectarse correctamente con la base de datos.
+
+### Validación Manual
+
+El endpoint `/health` fue probado desde navegador, Swagger y cliente HTTP (`curl`/Postman). Todas las pruebas respondieron correctamente, confirmando que el servicio puede verificarse tanto en desarrollo como en producción.
+
+### Validación Automática (CI/CD)
+
+GitHub Actions ejecuta un Health Check al finalizar el despliegue. El pipeline primero ejecuta las pruebas, construye la imagen Docker, despliega en DigitalOcean y finalmente consulta `/health`.
+
+El despliegue solamente se considera exitoso cuando el endpoint responde correctamente.
+
+| Verificación | Resultado |
+|--------------|-----------|
+| Endpoint /health implementado | ✅ |
+| HTTP 200 | ✅ |
+| PostgreSQL disponible | ✅ |
+| Swagger | ✅ |
+| Validación manual | ✅ |
+| Validación mediante CI/CD | ✅ |
+| Producción | ✅ |
+
+Nota: el endpoint `/health` constituye el mecanismo de monitoreo solicitado por la actividad del Bootcamp y permite verificar rápidamente la disponibilidad del servicio tanto en desarrollo como en producción.
+
+## Plan de Backups
+
+El proyecto cuenta con un plan formal de backups enfocado en proteger la información crítica de PostgreSQL, especialmente las tablas de productos, ventas y detalle de ventas. La estrategia define qué información debe respaldarse, la frecuencia recomendada, el lugar de almacenamiento y el procedimiento de recuperación ante fallos.
+
+El código fuente y la documentación se respaldan mediante GitHub. Las variables de entorno y secretos de producción deben conservarse en una ubicación segura fuera del repositorio.
+
+Documento completo: [docs/BACKUP_PLAN.md](docs/BACKUP_PLAN.md).
+
 ## Documentacion Swagger
 
 Con el servidor activo:
@@ -144,14 +240,19 @@ Con el servidor activo:
 http://localhost:3000/api-docs
 ```
 
-Despliegue temporal en DigitalOcean:
+Despliegue en DigitalOcean:
 
 ```text
+http://138.68.11.235:3001
 http://138.68.11.235:3001/health
 http://138.68.11.235:3001/api-docs/
 ```
 
 ## Endpoints Principales
+
+Entrada:
+
+- `GET /`
 
 Health:
 
